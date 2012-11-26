@@ -1,3 +1,9 @@
+/*
+ * toolkit-java
+ *
+ * Copyright (C) 2012 Dialogue Communications Ltd.
+ */
+
 package net.dialogue.toolkit.sms;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;

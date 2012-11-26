@@ -1,3 +1,9 @@
+/*
+ * toolkit-java
+ *
+ * Copyright (C) 2012 Dialogue Communications Ltd.
+ */
+
 package net.dialogue.toolkit.sms;
 
 import org.springframework.http.HttpEntity;
@@ -19,9 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * User: oliver
- * Date: 06/11/12
- * Time: 13:20
+ * Client used for sending messages.
  */
 public class SendSmsClient {
 

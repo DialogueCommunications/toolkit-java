@@ -1,3 +1,9 @@
+/*
+ * toolkit-java
+ *
+ * Copyright (C) 2012 Dialogue Communications Ltd.
+ */
+
 package net.dialogue.toolkit.sms;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -11,9 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * User: oliver
- * Date: 06/11/12
- * Time: 15:25
+ * Request object containing message(s), recipient(s) and other optional properties.
  */
 @XStreamAlias("sendSmsRequest")
 public class SendSmsRequest extends LinkedHashMap<String, String> implements Serializable {

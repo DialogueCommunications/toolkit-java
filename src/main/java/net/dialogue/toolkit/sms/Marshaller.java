@@ -1,3 +1,9 @@
+/*
+ * toolkit-java
+ *
+ * Copyright (C) 2012 Dialogue Communications Ltd.
+ */
+
 package net.dialogue.toolkit.sms;
 
 import com.thoughtworks.xstream.converters.Converter;
@@ -14,6 +20,9 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Custom marshaller for request and response objects.
+ */
 class Marshaller extends XStreamMarshaller {
 
     public Marshaller() {
