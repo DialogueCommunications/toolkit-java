@@ -1,5 +1,8 @@
 package net.dialogue.toolkit.sms;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -9,12 +12,9 @@ import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.util.support.Base64;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,9 +26,7 @@ import java.util.Arrays;
 public class SendSmsClient {
 
     /**
-     * Default transport that uses standard J2SE facilities (HttpURLConnection). Note that
-     * TRANSPORT_SIMPLE_CLIENT is null and thus equivalent to calling builder.transport(null);
-     * which will also use the default transport.
+     * Default transport that uses standard J2SE facilities (HttpURLConnection).
      */
     public static final ClientHttpRequestFactory TRANSPORT_SIMPLE_CLIENT;
 
@@ -44,7 +42,7 @@ public class SendSmsClient {
     public static final ClientHttpRequestFactory TRANSPORT_HTTP_COMPONENTS_CLIENT;
 
     static {
-        TRANSPORT_SIMPLE_CLIENT = null; // null uses default, i.e. calls getDefaultRequestFactory(client)
+        TRANSPORT_SIMPLE_CLIENT = new SimpleClientHttpRequestFactory();
         TRANSPORT_COMMONS_CLIENT = new CommonsClientHttpRequestFactory();
         TRANSPORT_HTTP_COMPONENTS_CLIENT = new HttpComponentsClientHttpRequestFactory();
     }
@@ -57,7 +55,7 @@ public class SendSmsClient {
     private String path = "/submit_sm";
 
     public SendSmsClient() {
-        setTransport(null);
+        setTransport(TRANSPORT_SIMPLE_CLIENT);
         restTemplate.setMessageConverters(
                 new ArrayList<HttpMessageConverter<?>>(
                         Arrays.asList(
@@ -91,8 +89,7 @@ public class SendSmsClient {
      * @param requestFactory The transport as a ClientHttpRequestFactory
      */
     public void setTransport(ClientHttpRequestFactory requestFactory) {
-        restTemplate.setRequestFactory(requestFactory == null ?
-                getDefaultRequestFactory() : requestFactory);
+        restTemplate.setRequestFactory(requestFactory);
     }
 
     /**
@@ -232,49 +229,32 @@ public class SendSmsClient {
      * @throws java.io.IOException Thrown if there is a networking or communication problem with the endpoint
      */
     public SendSmsResponse sendSms(SendSmsRequest request) throws HttpClientErrorException, IOException {
-        RestTemplate restTemplateWithCredentials = getRestTemplateWithCredentials(restTemplate);
         try {
-            return restTemplateWithCredentials.postForObject(
+            return restTemplate.postForObject(
                     (secure ? "https://" : "http://") + endpoint + path,
-                    request, SendSmsResponse.class);
+                    new HttpEntity<SendSmsRequest>(request, createHeaders()),
+                    SendSmsResponse.class);
         } catch (ResourceAccessException e) {
-            if(e.getCause() instanceof IOException) {
-                throw (IOException)e.getCause();
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
             } else {
                 throw e;
             }
         }
     }
 
-    protected RestTemplate getRestTemplateWithCredentials(RestTemplate restTemplate) {
-        // Set credentials for Apache Commons HttpClient and Apache HttpComponents Client;
-        // for other implementations override this method and set credentials accordingly
-        ClientHttpRequestFactory requestFactory = getTransport();
-        if (requestFactory instanceof CommonsClientHttpRequestFactory) {
-            // Credentials for Apache Commons HttpClient
-            ((CommonsClientHttpRequestFactory) requestFactory).getHttpClient().getState().
-                    setCredentials(
-                            org.apache.commons.httpclient.auth.AuthScope.ANY,
-                            new org.apache.commons.httpclient.UsernamePasswordCredentials(userName, password));
-        } else if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-            // Credentials for Apache HttpComponents Client
-            org.apache.http.client.HttpClient httpClient = ((HttpComponentsClientHttpRequestFactory) requestFactory).getHttpClient();
-            if (httpClient instanceof org.apache.http.impl.client.DefaultHttpClient) {
-                ((org.apache.http.impl.client.DefaultHttpClient) httpClient).getCredentialsProvider().setCredentials(
-                        org.apache.http.auth.AuthScope.ANY,
-                        new org.apache.http.auth.UsernamePasswordCredentials(userName, password));
-            }
-        }
-        return restTemplate;
-    }
-
-    protected ClientHttpRequestFactory getDefaultRequestFactory() {
-        return new SimpleClientHttpRequestFactory() {
-            protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-                super.prepareConnection(connection, httpMethod);
+    /**
+     * Creates default headers using Content-Type: application/xml and credentials.
+     *
+     * @return HTTP headers
+     */
+    protected HttpHeaders createHeaders() {
+        return new HttpHeaders() {
+            {
+                setContentType(MediaType.APPLICATION_XML);
                 String authorization = "Basic " + Base64.encodeBytes(
                         (getUserName() + ":" + getPassword()).getBytes());
-                connection.setRequestProperty("Authorization", authorization);
+                set("Authorization", authorization);
             }
         };
     }
@@ -310,8 +290,6 @@ public class SendSmsClient {
          * Note that built-in credentials support is only available for transports of type
          * CommonsClientHttpRequestFactory and HttpComponentsClientHttpRequestFactory;
          * any other custom transport requires you to provide credentials yourself.
-         * <p/>
-         * Provide null to use the default (TRANSPORT_SIMPLE_CLIENT) transport.
          *
          * @param requestFactory The transport as a ClientHttpRequestFactory
          * @return The builder for chaining calls

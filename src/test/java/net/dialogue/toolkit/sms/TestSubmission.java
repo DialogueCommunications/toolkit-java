@@ -32,8 +32,6 @@ public class TestSubmission {
             return;
         }
 
-        SendSmsClient client;
-
         final String endpoints = properties.getProperty("endpoints");
         if (endpoints == null || endpoints.length() == 0) {
             System.out.println("Property 'endpoints' not defined in test.properties.");
@@ -59,23 +57,44 @@ public class TestSubmission {
         }
 
         for(String endpoint : endpoints.split(",")) {
-            client = new SendSmsClient.Builder()
-                    .endpoint(endpoint)
-                    .credentials(login, password)
-                    .build();
 
-            client.setSecure(false);
-            testClient(client, recipients);
-    //        client.setSecure(true); // TODO: depends on RM #1950
-            testClient(client, recipients);
+            // TRANSPORT_SIMPLE_CLIENT
+            testClient(new SendSmsClient.Builder()
+                    .endpoint(endpoint)
+                    .transport(SendSmsClient.TRANSPORT_SIMPLE_CLIENT)
+                    .credentials(login, password)
+                    .build(), recipients);
+
+            // TRANSPORT_COMMONS_CLIENT
+            testClient(new SendSmsClient.Builder()
+                    .endpoint(endpoint)
+                    .transport(SendSmsClient.TRANSPORT_COMMONS_CLIENT)
+                    .credentials(login, password)
+                    .build(), recipients);
+
+            // TRANSPORT_HTTP_COMPONENTS_CLIENT
+            testClient(new SendSmsClient.Builder()
+                    .endpoint(endpoint)
+                    .transport(SendSmsClient.TRANSPORT_HTTP_COMPONENTS_CLIENT)
+                    .credentials(login, password)
+                    .build(), recipients);
 
             testWrongCredentials(endpoint);
         }
     }
 
+    private void testClient(SendSmsClient client, String recipients) throws IOException {
+        client.setSecure(false);
+        testClient2(client, recipients);
+        /*
+        client.setSecure(true); // TODO: depends on RM #1950
+        testClient(client, recipients);
+        */
+    }
+
     public void testWrongCredentials(String endpoint) throws IOException {
         try {
-            testClient(new SendSmsClient.Builder()
+            testClient2(new SendSmsClient.Builder()
                     .endpoint(endpoint)
                     .credentials("wrong", "wrong")
                     .secure(false)
@@ -92,7 +111,7 @@ public class TestSubmission {
 
     @Test(expected = UnknownHostException.class)
     public void wrongEndpoint() throws IOException {
-        testClient(new SendSmsClient.Builder()
+        testClient2(new SendSmsClient.Builder()
                 .endpoint("wrong")
                 .credentials("wrong", "wrong")
                 .secure(false)
@@ -101,7 +120,7 @@ public class TestSubmission {
         );
     }
 
-    private static void testClient(SendSmsClient client, String _recipients) throws HttpClientErrorException, IOException {
+    private static void testClient2(SendSmsClient client, String _recipients) throws HttpClientErrorException, IOException {
 
         List<String> recipients = new ArrayList<String>(
                 Arrays.asList(_recipients.split(",")));

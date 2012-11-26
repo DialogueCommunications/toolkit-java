@@ -33,9 +33,6 @@ public class TestBuilder {
                 .transport(TRANSPORT_SIMPLE_CLIENT).build();
         assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
 
-        // Test Transport.SIMPLE_CLIENT == null
-        assertNull(TRANSPORT_SIMPLE_CLIENT);
-
         // Transport.COMMONS_CLIENT
         client = new SendSmsClient.Builder()
                 .transport(TRANSPORT_COMMONS_CLIENT).build();

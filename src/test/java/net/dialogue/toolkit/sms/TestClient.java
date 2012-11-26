@@ -34,9 +34,6 @@ public class TestClient {
         client.setTransport(TRANSPORT_SIMPLE_CLIENT);
         assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
 
-        // Test Transport.SIMPLE_CLIENT == null
-        assertNull(TRANSPORT_SIMPLE_CLIENT);
-
         // Transport.COMMONS_CLIENT
         client = new SendSmsClient();
         client.setTransport(TRANSPORT_COMMONS_CLIENT);
