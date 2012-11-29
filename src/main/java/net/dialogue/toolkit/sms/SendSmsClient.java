@@ -15,85 +15,50 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
-import org.springframework.util.support.Base64;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+
+import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Client used for sending messages.
  */
 public class SendSmsClient {
 
-    /**
-     * Default transport that uses standard J2SE facilities (HttpURLConnection).
-     */
-    public static final ClientHttpRequestFactory TRANSPORT_SIMPLE_CLIENT;
-
-    /**
-     * Transport using Apache Commons HttpClient 3.x. Note that the Commons HttpClient
-     * project is no longer being actively developed and has been replaced by Apache HttpComponents.
-     */
-    public static final ClientHttpRequestFactory TRANSPORT_COMMONS_CLIENT;
-
-    /**
-     * Transport using Apache HttpComponents 4.x.
-     */
-    public static final ClientHttpRequestFactory TRANSPORT_HTTP_COMPONENTS_CLIENT;
-
-    static {
-        TRANSPORT_SIMPLE_CLIENT = new SimpleClientHttpRequestFactory();
-        TRANSPORT_COMMONS_CLIENT = new CommonsClientHttpRequestFactory();
-        TRANSPORT_HTTP_COMPONENTS_CLIENT = new HttpComponentsClientHttpRequestFactory();
-    }
-
-    protected final RestTemplate restTemplate = new RestTemplate();
+    private RestOperations restOperations;
     private String endpoint;
     private String userName;
     private String password;
     private boolean secure = true;
     private String path = "/submit_sm";
 
+    // TODO: docs
     public SendSmsClient() {
-        setTransport(TRANSPORT_SIMPLE_CLIENT);
-        restTemplate.setMessageConverters(
-                new ArrayList<HttpMessageConverter<?>>(
-                        Arrays.asList(
-                                new MarshallingHttpMessageConverter(new Marshaller())
-                        )
-                )
-        );
+        // Sensible, working default
+        this.restOperations = Builder.newRestTemplate(Builder.TRANSPORT_SIMPLE_CLIENT);
     }
 
-    /**
-     * Gets the underlying transport, a ClientHttpRequestFactory.
-     *
-     * @return The transport as a ClientHttpRequestFactory
-     */
-    public ClientHttpRequestFactory getTransport() {
-        return restTemplate.getRequestFactory();
+    // TODO: docs
+    public SendSmsClient(RestOperations restOperations) {
+        this.restOperations = restOperations;
     }
 
-    /**
-     * Sets the underlying transport, a ClientHttpRequestFactory.
-     * <p/>
-     * You can use TRANSPORT_SIMPLE_CLIENT, TRANSPORT_COMMONS_CLIENT, TRANSPORT_HTTP_COMPONENTS_CLIENT
-     * or your custom transport implementation.
-     * <p/>
-     * Note that built-in credentials support is only available for transports of type
-     * CommonsClientHttpRequestFactory and HttpComponentsClientHttpRequestFactory;
-     * any other custom transport requires you to provide credentials yourself.
-     * <p/>
-     * Provide null to use the default (TRANSPORT_SIMPLE_CLIENT) transport.
-     *
-     * @param requestFactory The transport as a ClientHttpRequestFactory
-     */
-    public void setTransport(ClientHttpRequestFactory requestFactory) {
-        restTemplate.setRequestFactory(requestFactory);
+    // TODO: docs
+    public RestOperations getRestOperations() {
+        return restOperations;
+    }
+
+    // TODO: docs
+    public void setRestOperations(RestOperations restOperations) {
+        this.restOperations = restOperations;
     }
 
     /**
@@ -234,7 +199,7 @@ public class SendSmsClient {
      */
     public SendSmsResponse sendSms(SendSmsRequest request) throws HttpClientErrorException, IOException {
         try {
-            return restTemplate.postForObject(
+            return restOperations.postForObject(
                     (secure ? "https://" : "http://") + endpoint + path,
                     new HttpEntity<SendSmsRequest>(request, createHeaders()),
                     SendSmsResponse.class);
@@ -256,8 +221,8 @@ public class SendSmsClient {
         return new HttpHeaders() {
             {
                 setContentType(MediaType.APPLICATION_XML);
-                String authorization = "Basic " + Base64.encodeBytes(
-                        (getUserName() + ":" + getPassword()).getBytes());
+                String authorization = "Basic " + new String(Base64.encodeBase64(
+                        (getUserName() + ":" + getPassword()).getBytes()));
                 set("Authorization", authorization);
             }
         };
@@ -276,6 +241,56 @@ public class SendSmsClient {
      */
     public static class Builder {
 
+        /**
+         * Default transport that uses standard J2SE facilities (HttpURLConnection).
+         */
+        public static final ClientHttpRequestFactory TRANSPORT_SIMPLE_CLIENT;
+
+        /**
+         * Transport using Apache Commons HttpClient 3.x. Note that the Commons HttpClient
+         * project is no longer being actively developed and has been replaced by Apache HttpComponents.
+         */
+        public static final ClientHttpRequestFactory TRANSPORT_COMMONS_CLIENT;
+
+        /**
+         * Transport using Apache HttpComponents 4.x.
+         */
+        public static final ClientHttpRequestFactory TRANSPORT_HTTP_COMPONENTS_CLIENT;
+
+        static {
+            TRANSPORT_SIMPLE_CLIENT = new SimpleClientHttpRequestFactory();
+
+            // Try to set up CommonsClientHttpRequestFactory,
+            // fall back to SimpleClientHttpRequestFactory if dependency not on CLASSPATH
+            ClientHttpRequestFactory transportCommonsClient;
+            try {
+                transportCommonsClient = new CommonsClientHttpRequestFactory();
+            } catch (LinkageError e) {
+                transportCommonsClient = TRANSPORT_SIMPLE_CLIENT;
+                System.out.println("Failed to set up SendSmsClient.TRANSPORT_COMMONS_CLIENT; " +
+                        "will use TRANSPORT_SIMPLE_CLIENT instead: " + e);
+            }
+            TRANSPORT_COMMONS_CLIENT = transportCommonsClient;
+
+            // Try to set up HttpComponentsClientHttpRequestFactory,
+            // fall back to SimpleClientHttpRequestFactory if dependency not on CLASSPATH
+            ClientHttpRequestFactory transportHttpComponentsClient;
+            try {
+                transportHttpComponentsClient = new HttpComponentsClientHttpRequestFactory();
+            } catch (LinkageError e) {
+                transportHttpComponentsClient = TRANSPORT_SIMPLE_CLIENT;
+                System.out.println("Failed to set up SendSmsClient.TRANSPORT_HTTP_COMPONENTS_CLIENT; " +
+                        "will use TRANSPORT_SIMPLE_CLIENT instead: " + e);
+            }
+            TRANSPORT_HTTP_COMPONENTS_CLIENT = transportHttpComponentsClient;
+        }
+
+        public static List<HttpMessageConverter<?>> MESSAGE_CONVERTERS = Collections.unmodifiableList(
+                new ArrayList<HttpMessageConverter<?>>(Arrays.asList(
+                        new MarshallingHttpMessageConverter(new Marshaller())
+                )
+                ));
+
         private SendSmsClient client = new SendSmsClient();
 
         /**
@@ -283,6 +298,12 @@ public class SendSmsClient {
          */
         public Builder() {
             transport(TRANSPORT_SIMPLE_CLIENT);
+        }
+
+        private static RestTemplate newRestTemplate(ClientHttpRequestFactory requestFactory) {
+            RestTemplate restTemplate = new RestTemplate(requestFactory);
+            restTemplate.setMessageConverters(MESSAGE_CONVERTERS);
+            return restTemplate;
         }
 
         /**
@@ -299,7 +320,7 @@ public class SendSmsClient {
          * @return The builder for chaining calls
          */
         public Builder transport(ClientHttpRequestFactory requestFactory) {
-            client.setTransport(requestFactory);
+            client.setRestOperations(newRestTemplate(requestFactory));
             return this;
         }
 

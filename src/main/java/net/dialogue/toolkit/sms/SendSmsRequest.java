@@ -6,8 +6,6 @@
 
 package net.dialogue.toolkit.sms;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -19,7 +17,6 @@ import java.util.*;
 /**
  * Request object containing message(s), recipient(s) and other optional properties.
  */
-@XStreamAlias("sendSmsRequest")
 public class SendSmsRequest extends LinkedHashMap<String, String> implements Serializable {
 
     private List<String> messages;

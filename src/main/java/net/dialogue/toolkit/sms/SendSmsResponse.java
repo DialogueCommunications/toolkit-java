@@ -6,9 +6,6 @@
 
 package net.dialogue.toolkit.sms;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +13,8 @@ import java.util.List;
 /**
  * Response object containing a list of one or more submitted messages.
  */
-@XStreamAlias("sendSmsResponse")
 public class SendSmsResponse implements Serializable {
 
-    @XStreamAlias("sms")
-    @XStreamImplicit
     private List<Sms> messages = new ArrayList<Sms>();
 
     /**

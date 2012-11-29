@@ -3,15 +3,9 @@ package net.dialogue.toolkit.sms;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.*;
-
-import java.io.IOException;
-import java.net.URI;
-
-import static net.dialogue.toolkit.sms.SendSmsClient.TRANSPORT_COMMONS_CLIENT;
-import static net.dialogue.toolkit.sms.SendSmsClient.TRANSPORT_HTTP_COMPONENTS_CLIENT;
-import static net.dialogue.toolkit.sms.SendSmsClient.TRANSPORT_SIMPLE_CLIENT;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * User: oliver
@@ -25,34 +19,14 @@ public class TestClient {
 
         SendSmsClient client;
 
-        // Default transport
         client = new SendSmsClient();
-        assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
+        assertTrue(((RestTemplate) client.getRestOperations()).getRequestFactory()
+                instanceof SimpleClientHttpRequestFactory);
 
-        // Transport.SIMPLE_CLIENT
+        RestOperations restOperations = new RestTemplate();
         client = new SendSmsClient();
-        client.setTransport(TRANSPORT_SIMPLE_CLIENT);
-        assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
-
-        // Transport.COMMONS_CLIENT
-        client = new SendSmsClient();
-        client.setTransport(TRANSPORT_COMMONS_CLIENT);
-        assertTrue(client.getTransport() instanceof CommonsClientHttpRequestFactory);
-
-        // Transport.HTTP_COMPONENTS_CLIENT
-        client = new SendSmsClient();
-        client.setTransport(TRANSPORT_HTTP_COMPONENTS_CLIENT);
-        assertTrue(client.getTransport() instanceof HttpComponentsClientHttpRequestFactory);
-
-        // Custom transport
-        ClientHttpRequestFactory customTransport = new ClientHttpRequestFactory() {
-            public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-                return null;
-            }
-        };
-        client = new SendSmsClient();
-        client.setTransport(customTransport);
-        assertEquals(client.getTransport(), customTransport);
+        client.setRestOperations(restOperations);
+        assertSame(client.getRestOperations(), restOperations);
     }
 
     @Test

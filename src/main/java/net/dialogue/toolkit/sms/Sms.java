@@ -6,28 +6,16 @@
 
 package net.dialogue.toolkit.sms;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 import java.io.Serializable;
 
 /**
  * Contains details of an individual submission.
  */
-@XStreamAlias(value = "sms")
 public class Sms implements Serializable {
 
-    @XStreamAsAttribute
-    @XStreamAlias("X-E3-ID")
     private String id;
-    @XStreamAsAttribute
-    @XStreamAlias("X-E3-Recipients")
     private String recipient;
-    @XStreamAsAttribute
-    @XStreamAlias("X-E3-Submission-Report")
     private String submissionReport;
-    @XStreamAsAttribute
-    @XStreamAlias("X-E3-Error-Description")
     private String errorDescription;
 
     /**

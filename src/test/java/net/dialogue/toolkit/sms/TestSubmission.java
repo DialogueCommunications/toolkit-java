@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static net.dialogue.toolkit.sms.SendSmsClient.Builder.*;
+
 /**
  * User: oliver
  * Date: 20/11/12
@@ -61,21 +63,21 @@ public class TestSubmission {
             // TRANSPORT_SIMPLE_CLIENT
             testClient(new SendSmsClient.Builder()
                     .endpoint(endpoint)
-                    .transport(SendSmsClient.TRANSPORT_SIMPLE_CLIENT)
+                    .transport(TRANSPORT_SIMPLE_CLIENT)
                     .credentials(login, password)
                     .build(), recipients);
 
             // TRANSPORT_COMMONS_CLIENT
             testClient(new SendSmsClient.Builder()
                     .endpoint(endpoint)
-                    .transport(SendSmsClient.TRANSPORT_COMMONS_CLIENT)
+                    .transport(TRANSPORT_COMMONS_CLIENT)
                     .credentials(login, password)
                     .build(), recipients);
 
             // TRANSPORT_HTTP_COMPONENTS_CLIENT
             testClient(new SendSmsClient.Builder()
                     .endpoint(endpoint)
-                    .transport(SendSmsClient.TRANSPORT_HTTP_COMPONENTS_CLIENT)
+                    .transport(TRANSPORT_HTTP_COMPONENTS_CLIENT)
                     .credentials(login, password)
                     .build(), recipients);
 

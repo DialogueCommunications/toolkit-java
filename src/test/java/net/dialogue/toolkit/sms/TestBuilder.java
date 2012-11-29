@@ -5,11 +5,12 @@ import static org.junit.Assert.*;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
 
-import static net.dialogue.toolkit.sms.SendSmsClient.*;
+import static net.dialogue.toolkit.sms.SendSmsClient.Builder.*;
 
 /**
  * User: oliver
@@ -26,22 +27,26 @@ public class TestBuilder {
         // Default transport
         client = new SendSmsClient.Builder()
                 .build();
-        assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
+        assertTrue(((RestTemplate)client.getRestOperations()).getRequestFactory()
+                instanceof SimpleClientHttpRequestFactory);
 
         // Transport.SIMPLE_CLIENT
         client = new SendSmsClient.Builder()
                 .transport(TRANSPORT_SIMPLE_CLIENT).build();
-        assertTrue(client.getTransport() instanceof SimpleClientHttpRequestFactory);
+        assertTrue(((RestTemplate)client.getRestOperations()).getRequestFactory()
+                instanceof SimpleClientHttpRequestFactory);
 
         // Transport.COMMONS_CLIENT
         client = new SendSmsClient.Builder()
                 .transport(TRANSPORT_COMMONS_CLIENT).build();
-        assertTrue(client.getTransport() instanceof CommonsClientHttpRequestFactory);
+        assertTrue(((RestTemplate)client.getRestOperations()).getRequestFactory()
+                instanceof CommonsClientHttpRequestFactory);
 
         // Transport.HTTP_COMPONENTS_CLIENT
         client = new SendSmsClient.Builder()
                 .transport(TRANSPORT_HTTP_COMPONENTS_CLIENT).build();
-        assertTrue(client.getTransport() instanceof HttpComponentsClientHttpRequestFactory);
+        assertTrue(((RestTemplate)client.getRestOperations()).getRequestFactory()
+                instanceof HttpComponentsClientHttpRequestFactory);
 
         // Custom transport
         ClientHttpRequestFactory customTransport = new ClientHttpRequestFactory() {
@@ -51,7 +56,7 @@ public class TestBuilder {
         };
         client = new SendSmsClient.Builder()
                 .transport(customTransport).build();
-        assertEquals(client.getTransport(), customTransport);
+        assertEquals(((RestTemplate)client.getRestOperations()).getRequestFactory(), customTransport);
     }
 
     @Test
