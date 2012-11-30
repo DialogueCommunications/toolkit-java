@@ -5,11 +5,6 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-/**
- * User: oliver
- * Date: 20/11/12
- * Time: 10:26
- */
 public class TestRequest {
 
     private static final List<String> EMPTY_STRING_LIST = Collections.emptyList();

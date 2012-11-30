@@ -1,10 +1,9 @@
 package net.dialogue.toolkit.sms;
 
 import org.junit.Test;
-import org.springframework.web.client.HttpClientErrorException;
-
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,11 +15,6 @@ import java.util.Properties;
 
 import static net.dialogue.toolkit.sms.SendSmsClient.Builder.*;
 
-/**
- * User: oliver
- * Date: 20/11/12
- * Time: 12:57
- */
 public class TestSubmission {
 
     @Test

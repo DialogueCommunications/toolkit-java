@@ -13,20 +13,13 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Client used for sending messages.
@@ -40,23 +33,38 @@ public class SendSmsClient {
     private boolean secure = true;
     private String path = "/submit_sm";
 
-    // TODO: docs
+    /**
+     * Creates a new SendSmsClient instance using the default configuration.
+     */
     public SendSmsClient() {
         // Sensible, working default
-        this.restOperations = Builder.newRestTemplate(Builder.TRANSPORT_SIMPLE_CLIENT);
+        this.restOperations = new SendSmsClientRestTemplate(Builder.TRANSPORT_SIMPLE_CLIENT);
     }
 
-    // TODO: docs
+    /**
+     * Creates a new SendSmsClient instance using the RestOperations provided to communicate with the REST web service.
+     *
+     * @param restOperations The RestOperations instance used to communicate with the REST web service
+     */
     public SendSmsClient(RestOperations restOperations) {
         this.restOperations = restOperations;
     }
 
-    // TODO: docs
+    /**
+     * Gets the RestOperations property.
+     *
+     * @return The RestOperations instance used to communicate with the REST web service
+     * @see SendSmsClient#setRestOperations(RestOperations)
+     */
     public RestOperations getRestOperations() {
         return restOperations;
     }
 
-    // TODO: docs
+    /**
+     * Sets the RestOperations property.
+     *
+     * @param restOperations The RestOperations instance used to communicate with the REST web service
+     */
     public void setRestOperations(RestOperations restOperations) {
         this.restOperations = restOperations;
     }
@@ -285,12 +293,6 @@ public class SendSmsClient {
             TRANSPORT_HTTP_COMPONENTS_CLIENT = transportHttpComponentsClient;
         }
 
-        public static List<HttpMessageConverter<?>> MESSAGE_CONVERTERS = Collections.unmodifiableList(
-                new ArrayList<HttpMessageConverter<?>>(Arrays.asList(
-                        new MarshallingHttpMessageConverter(new Marshaller())
-                )
-                ));
-
         private SendSmsClient client = new SendSmsClient();
 
         /**
@@ -298,12 +300,6 @@ public class SendSmsClient {
          */
         public Builder() {
             transport(TRANSPORT_SIMPLE_CLIENT);
-        }
-
-        private static RestTemplate newRestTemplate(ClientHttpRequestFactory requestFactory) {
-            RestTemplate restTemplate = new RestTemplate(requestFactory);
-            restTemplate.setMessageConverters(MESSAGE_CONVERTERS);
-            return restTemplate;
         }
 
         /**
@@ -320,7 +316,7 @@ public class SendSmsClient {
          * @return The builder for chaining calls
          */
         public Builder transport(ClientHttpRequestFactory requestFactory) {
-            client.setRestOperations(newRestTemplate(requestFactory));
+            client.setRestOperations(new SendSmsClientRestTemplate(requestFactory));
             return this;
         }
 

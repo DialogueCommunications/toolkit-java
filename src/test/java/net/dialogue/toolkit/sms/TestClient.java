@@ -7,11 +7,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * User: oliver
- * Date: 20/11/12
- * Time: 09:24
- */
 public class TestClient {
 
     @Test

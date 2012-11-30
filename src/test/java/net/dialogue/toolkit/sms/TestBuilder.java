@@ -12,11 +12,6 @@ import java.net.URI;
 
 import static net.dialogue.toolkit.sms.SendSmsClient.Builder.*;
 
-/**
- * User: oliver
- * Date: 06/11/12
- * Time: 16:02
- */
 public class TestBuilder {
 
     @Test
