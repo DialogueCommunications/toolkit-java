@@ -241,11 +241,11 @@ public class SendSmsClient {
      * <p/>
      * import static net.dialogue.toolkit.sms.SendSmsClient.*;
      * <p/>
-     * SendSmsClient client = new SendSmsClient.Builder()
-     * .transport(TRANSPORT_HTTP_COMPONENTS_CLIENT)
-     * .endpoint("endpoint")
-     * .credentials("username", "password")
-     * .build();
+     * SendSmsClient client = new SendSmsClient.Builder()<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;.transport(TRANSPORT_HTTP_COMPONENTS_CLIENT)<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;.endpoint("endpoint")<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;.credentials("username", "password")<br/>
+     * &nbsp;&nbsp;&nbsp;&nbsp;.build();
      */
     public static class Builder {
 
