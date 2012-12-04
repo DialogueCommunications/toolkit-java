@@ -96,7 +96,7 @@ public class Sms implements Serializable {
      * @return True if the submission was successful, false otherwise.
      */
     public boolean isSuccessful() {
-        return "00".equals(submissionReport);
+        return StatusCodes.STATUS_SUCCESSFUL.equals(submissionReport);
     }
 
     /**
