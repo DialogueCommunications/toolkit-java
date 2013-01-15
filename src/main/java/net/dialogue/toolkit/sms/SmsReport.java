@@ -142,12 +142,14 @@ public class SmsReport implements Serializable {
     public State getState() {
         if (deliveryReport == null || deliveryReport.length() == 0)
             return State.Undefined;
-        if (deliveryReport.startsWith("0") || deliveryReport.startsWith("1"))
+
+        StatusCodes statusCodes = StatusCodes.INSTANCE;
+        if (statusCodes.isTransactionCompleted(deliveryReport))
             return State.Delivered;
-        if (deliveryReport.startsWith("2") || deliveryReport.startsWith("3"))
+        if (statusCodes.isTemporaryError(deliveryReport))
             return State.TemporaryError;
-        if (deliveryReport.startsWith("4") || deliveryReport.startsWith("5") ||
-                deliveryReport.startsWith("6") || deliveryReport.startsWith("7"))
+        if (statusCodes.isPermanentError(deliveryReport) ||
+                statusCodes.isRetryError(deliveryReport))
             return State.PermanentError;
         throw new IllegalStateException(
                 "Unknown delivery report value: " + deliveryReport

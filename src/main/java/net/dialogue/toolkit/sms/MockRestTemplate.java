@@ -40,7 +40,7 @@ public abstract class MockRestTemplate extends RestTemplate {
             Sms sms = new Sms();
             sms.setId(UUID.randomUUID().toString());
             sms.setRecipient(recipient);
-            sms.setSubmissionReport(StatusCodes.STATUS_SUCCESSFUL);
+            sms.setSubmissionReport(StatusCodes.TransactionCompleted.STATUS_SUCCESSFUL);
             return sms;
         }
     }
@@ -60,7 +60,7 @@ public abstract class MockRestTemplate extends RestTemplate {
         protected Sms getSms(String message, String recipient) {
             Sms sms = new Sms();
             sms.setRecipient(recipient);
-            sms.setSubmissionReport(StatusCodes.PermanentErrors.STATUS_UNKNOWN_ERROR);
+            sms.setSubmissionReport(StatusCodes.PermanentError.STATUS_UNKNOWN_ERROR);
             sms.setErrorDescription("Unknown error");
             return sms;
         }
