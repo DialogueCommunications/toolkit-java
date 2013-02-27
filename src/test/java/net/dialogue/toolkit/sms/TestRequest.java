@@ -418,7 +418,14 @@ public class TestRequest {
         request.setValidityPeriod(WEEK * 2);
 
         String xml = request.toString().replaceAll("\r\n", "").replaceAll("\n", "").replaceAll("  <", "<");
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><sendSmsRequest><X-E3-Message>message</X-E3-Message><X-E3-Message>message2</X-E3-Message><X-E3-Recipients>recipient</X-E3-Recipients><X-E3-Recipients>recipient2</X-E3-Recipients><X-E3-Originating-Address>sender</X-E3-Originating-Address><X-E3-Concatenation-Limit>255</X-E3-Concatenation-Limit><X-E3-Schedule-For>20120901123000</X-E3-Schedule-For><X-E3-Confirm-Delivery>on</X-E3-Confirm-Delivery><X-E3-Reply-Path>/path</X-E3-Reply-Path><X-E3-User-Key>123457890</X-E3-User-Key><X-E3-Session-Reply-Path>/path</X-E3-Session-Reply-Path><X-E3-Session-ID>1234567890</X-E3-Session-ID><X-E3-User-Tag>123457890</X-E3-User-Tag><X-E3-Validity-Period>2w</X-E3-Validity-Period></sendSmsRequest>", xml);
+
+        assertTrue(
+                // Java 1.6+
+                xml.equals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><sendSmsRequest><X-E3-Message>message</X-E3-Message><X-E3-Message>message2</X-E3-Message><X-E3-Recipients>recipient</X-E3-Recipients><X-E3-Recipients>recipient2</X-E3-Recipients><X-E3-Originating-Address>sender</X-E3-Originating-Address><X-E3-Concatenation-Limit>255</X-E3-Concatenation-Limit><X-E3-Schedule-For>20120901123000</X-E3-Schedule-For><X-E3-Confirm-Delivery>on</X-E3-Confirm-Delivery><X-E3-Reply-Path>/path</X-E3-Reply-Path><X-E3-User-Key>123457890</X-E3-User-Key><X-E3-Session-Reply-Path>/path</X-E3-Session-Reply-Path><X-E3-Session-ID>1234567890</X-E3-Session-ID><X-E3-User-Tag>123457890</X-E3-User-Tag><X-E3-Validity-Period>2w</X-E3-Validity-Period></sendSmsRequest>")
+                ||
+                // Java 1.5
+                xml.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><sendSmsRequest><X-E3-Message>message</X-E3-Message><X-E3-Message>message2</X-E3-Message><X-E3-Recipients>recipient</X-E3-Recipients><X-E3-Recipients>recipient2</X-E3-Recipients><X-E3-Originating-Address>sender</X-E3-Originating-Address><X-E3-Concatenation-Limit>255</X-E3-Concatenation-Limit><X-E3-Schedule-For>20120901123000</X-E3-Schedule-For><X-E3-Confirm-Delivery>on</X-E3-Confirm-Delivery><X-E3-Reply-Path>/path</X-E3-Reply-Path><X-E3-User-Key>123457890</X-E3-User-Key><X-E3-Session-Reply-Path>/path</X-E3-Session-Reply-Path><X-E3-Session-ID>1234567890</X-E3-Session-ID><X-E3-User-Tag>123457890</X-E3-User-Tag><X-E3-Validity-Period>2w</X-E3-Validity-Period></sendSmsRequest>")
+        );
     }
 }
 

@@ -163,7 +163,7 @@ public class StatusCodes {
      * @throws IllegalArgumentException Thrown if statusCode is null or empty.
      */
     public boolean isTransactionCompleted(String statusCode) {
-        if(statusCode == null || statusCode.isEmpty()) {
+        if(statusCode == null || statusCode.length() == 0) {
             throw new IllegalArgumentException(
                     "No status code provided."
             );
@@ -191,7 +191,7 @@ public class StatusCodes {
      * @throws IllegalArgumentException Thrown if statusCode is null or empty.
      */
     public boolean isTemporaryError(String statusCode) {
-        if(statusCode == null || statusCode.isEmpty()) {
+        if(statusCode == null || statusCode.length() == 0) {
             throw new IllegalArgumentException(
                     "No status code provided."
             );
@@ -219,7 +219,7 @@ public class StatusCodes {
      * @throws IllegalArgumentException Thrown if statusCode is null or empty.
      */
     public boolean isPermanentError(String statusCode) {
-        if(statusCode == null || statusCode.isEmpty()) {
+        if(statusCode == null || statusCode.length() == 0) {
             throw new IllegalArgumentException(
                     "No status code provided."
             );
@@ -247,7 +247,7 @@ public class StatusCodes {
      * @throws IllegalArgumentException Thrown if statusCode is null or empty.
      */
     public boolean isRetryError(String statusCode) {
-        if(statusCode == null || statusCode.isEmpty()) {
+        if(statusCode == null || statusCode.length() == 0) {
             throw new IllegalArgumentException(
                     "No status code provided."
             );
@@ -275,7 +275,7 @@ public class StatusCodes {
      * @throws IllegalArgumentException Thrown if statusCode is null or empty.
      */
     public String getDescription(String statusCode) {
-        if(statusCode == null || statusCode.isEmpty()) {
+        if(statusCode == null || statusCode.length() == 0) {
             throw new IllegalArgumentException(
                     "No status code provided."
             );
